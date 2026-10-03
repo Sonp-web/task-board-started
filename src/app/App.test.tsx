@@ -1,6 +1,6 @@
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Task } from '../features/tasks/model/task'
 import { createLocalStorageTaskRepository, TASK_STORAGE_KEY } from '../services/localStorageTaskRepository'
 import type { TaskRepository } from '../services/taskRepository'
@@ -57,13 +57,99 @@ describe('App', () => {
     expect(screen.getByText('Готово: 3')).toBeInTheDocument()
   })
 
-  it('shows zero stats for an invalid persisted envelope', async () => {
+  it('reports stats from repository tasks instead of localStorage', async () => {
     localStorage.setItem(TASK_STORAGE_KEY, JSON.stringify({ version: 1, tasks: [{ status: 'todo' }] }))
     render(<App repository={createRepositoryDouble()} />)
 
-    expect(screen.getByText('Всего задач: 0')).toBeInTheDocument()
-    expect(screen.getByText('В работе: 0')).toBeInTheDocument()
+    expect(await screen.findByText('Всего задач: 1')).toBeInTheDocument()
+    expect(screen.getByText('В работе: 1')).toBeInTheDocument()
     expect(screen.getByText('Готово: 0')).toBeInTheDocument()
+  })
+
+  describe('overdue counter', () => {
+    beforeEach(() => {
+      vi.useFakeTimers({ toFake: ['Date'] })
+      vi.setSystemTime(new Date(2026, 8, 14, 12))
+    })
+
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    it('counts only unfinished tasks with a due date before today', async () => {
+      const tasks: Task[] = [
+        { ...activeTask, id: 'task-overdue', title: 'Просроченная', status: 'todo', dueDate: '2026-09-13' },
+        { ...activeTask, id: 'task-today', title: 'На сегодня', status: 'todo', dueDate: '2026-09-14' },
+        { ...activeTask, id: 'task-no-due', title: 'Без срока', status: 'todo', dueDate: undefined },
+        { ...activeTask, id: 'task-done', title: 'Готовая', status: 'done', dueDate: '2026-09-01' },
+      ]
+      render(<App repository={createRepositoryDouble({
+        load: vi.fn().mockResolvedValue({ tasks, recovered: false }),
+      })} />)
+
+      expect(await screen.findByText('Всего задач: 4')).toBeInTheDocument()
+      expect(screen.getByText('Просрочено: 1')).toBeInTheDocument()
+    })
+
+    it('updates after moving tasks', async () => {
+      const user = userEvent.setup()
+      const repository = createLocalStorageTaskRepository(localStorage, {
+        createId: () => 'task-new',
+        now: () => '2026-09-14T12:00:00.000Z',
+      })
+      await repository.reset()
+      render(<App repository={repository} />)
+
+      expect(await screen.findByText('Просрочено: 1')).toBeInTheDocument()
+
+      await user.click(screen.getByRole('button', { name: 'Переместить: Подготовить релиз' }))
+      expect(await screen.findByText('Просрочено: 0')).toBeInTheDocument()
+
+      await user.click(screen.getByRole('button', { name: 'Переместить: Подготовить релиз' }))
+      expect(await screen.findByText('Просрочено: 1')).toBeInTheDocument()
+    })
+
+    it('updates after editing a due date', async () => {
+      const user = userEvent.setup()
+      render(<App repository={createRepositoryDouble()} />)
+
+      expect(await screen.findByText('Просрочено: 1')).toBeInTheDocument()
+
+      await user.click(screen.getByRole('button', { name: 'Редактировать: Подготовить релиз' }))
+      await user.clear(screen.getByLabelText('Срок'))
+      await user.click(screen.getByRole('button', { name: 'Сохранить' }))
+
+      expect(await screen.findByText('Просрочено: 0')).toBeInTheDocument()
+    })
+
+    it('updates after creating a task', async () => {
+      const user = userEvent.setup()
+      render(<App repository={createRepositoryDouble({
+        load: vi.fn().mockResolvedValue({ tasks: [], recovered: false }),
+      })} />)
+
+      expect(await screen.findByText('Просрочено: 0')).toBeInTheDocument()
+
+      await user.click(screen.getByRole('button', { name: 'Новая задача' }))
+      await user.type(screen.getByRole('textbox', { name: 'Название' }), 'Новая задача')
+      await user.click(screen.getByRole('button', { name: 'Создать' }))
+
+      expect(await screen.findByText('Просрочено: 1')).toBeInTheDocument()
+    })
+
+    it('updates after resetting the board', async () => {
+      const user = userEvent.setup()
+      render(<App repository={createRepositoryDouble({
+        load: vi.fn().mockResolvedValue({ tasks: [], recovered: false }),
+      })} />)
+
+      expect(await screen.findByText('Просрочено: 0')).toBeInTheDocument()
+
+      await user.click(screen.getByRole('button', { name: 'Восстановить пример' }))
+      await user.click(screen.getByRole('button', { name: 'Восстановить задачи' }))
+
+      expect(await screen.findByText('Просрочено: 1')).toBeInTheDocument()
+    })
   })
 
   it('renders tasks in their status columns after loading', async () => {
