@@ -1,9 +1,65 @@
 :root {
+  color-scheme: light dark;
+
+  --bg: #f5f3ee;
+  --surface: #ffffff;
+  --tray: #ebe8e1;
+  --text: #1c1a17;
+  --muted: #6a655d;
+  --border: #dedad1;
+  --accent: #6d28d9;
+  --accent-hover: #5b21b6;
+  --accent-soft: #efe9fd;
+  --on-accent: #ffffff;
+  --danger: #b42318;
+  --danger-soft: #fdecea;
+  --info-text: #1e4e5f;
+  --info-soft: #e3f1f4;
+  --low-text: #1f6b3a;
+  --low-soft: #dff3e4;
+  --medium-text: #8a4b08;
+  --medium-soft: #fbecc9;
+  --high-text: #a11a3a;
+  --high-soft: #fde2e7;
+  --shadow: 0 1px 2px rgba(28, 26, 23, 0.06), 0 4px 12px rgba(28, 26, 23, 0.04);
+  --shadow-dialog: 0 24px 60px rgba(28, 26, 23, 0.28);
+  --backdrop: rgba(28, 26, 23, 0.5);
+  --radius: 12px;
+  --radius-sm: 8px;
+
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  color: #172033;
-  background: #f4f6fb;
+  color: var(--text);
+  background: var(--bg);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #141316;
+    --surface: #222026;
+    --tray: #1a191d;
+    --text: #efedf3;
+    --muted: #a39fad;
+    --border: #34313b;
+    --accent: #a78bfa;
+    --accent-hover: #c4b5fd;
+    --accent-soft: #2d2640;
+    --on-accent: #17131f;
+    --danger: #f97066;
+    --danger-soft: #3a1e1c;
+    --info-text: #9bd3e0;
+    --info-soft: #1b2e33;
+    --low-text: #86d9a0;
+    --low-soft: #1b3023;
+    --medium-text: #f2c66d;
+    --medium-soft: #3a2e14;
+    --high-text: #f99bb0;
+    --high-soft: #3d1c25;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-dialog: 0 24px 60px rgba(0, 0, 0, 0.6);
+    --backdrop: rgba(0, 0, 0, 0.6);
+  }
 }
 
 * { box-sizing: border-box; }
@@ -12,7 +68,7 @@ button, input, textarea, select { font: inherit; }
 button { min-height: 44px; }
 
 body {
-  background: #f4f6fb;
+  background: var(--bg);
   line-height: 1.5;
 }
 
@@ -20,18 +76,19 @@ button,
 input,
 textarea,
 select {
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
 }
 
 button {
   cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
 }
 
 button:focus-visible,
 input:focus-visible,
 textarea:focus-visible,
 select:focus-visible {
-  outline: 3px solid #2563eb;
+  outline: 3px solid var(--accent);
   outline-offset: 2px;
 }
 

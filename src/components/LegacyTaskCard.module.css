@@ -1,12 +1,12 @@
 .card {
   display: grid;
   gap: 12px;
-  border: 1px solid #e2e8f0;
-  border-radius: 16px;
-  padding: 16px;
-  color: #172033;
-  background: #fff;
-  box-shadow: 0 8px 20px rgba(23, 32, 51, 0.05);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+  color: var(--text);
+  background: var(--surface);
+  box-shadow: var(--shadow);
 }
 
 .title {
@@ -18,7 +18,7 @@
 .description,
 .dueDate {
   margin: 0;
-  color: #526078;
+  color: var(--muted);
   font-size: 0.9rem;
 }
 
@@ -26,13 +26,13 @@
   justify-self: start;
   border-radius: 999px;
   padding: 4px 9px;
-  font-size: 0.8rem;
-  font-weight: 800;
+  font-size: 0.75rem;
+  font-weight: 700;
 }
 
-.low { color: #166534; background: #dcfce7; }
-.medium { color: #92400e; background: #fef3c7; }
-.high { color: #9f1239; background: #ffe4e6; }
+.low { color: var(--low-text); background: var(--low-soft); }
+.medium { color: var(--medium-text); background: var(--medium-soft); }
+.high { color: var(--high-text); background: var(--high-soft); }
 
 .actions {
   display: flex;
@@ -42,19 +42,18 @@
 
 .actions button {
   flex: 1 1 88px;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--border);
   padding: 0 10px;
-  color: #1e3a8a;
-  background: #fff;
+  color: var(--text);
+  background: transparent;
   font-size: 0.85rem;
-  font-weight: 700;
+  font-weight: 600;
 }
 
-.actions button:hover { background: #eff6ff; }
+.actions button:hover { background: var(--accent-soft); border-color: var(--accent); }
 
 .actions button:last-child {
-  color: #b91c1c;
-  border-color: #fecaca;
+  color: var(--danger);
 }
 
-.actions button:last-child:hover { background: #fef2f2; }
+.actions button:last-child:hover { background: var(--danger-soft); border-color: var(--danger); }
