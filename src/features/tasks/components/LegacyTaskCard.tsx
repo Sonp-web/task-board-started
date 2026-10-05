@@ -1,4 +1,5 @@
-import type { Task, TaskPriority } from '../features/tasks/model/task'
+import { TaskDueLabel } from './TaskDueLabel'
+import type { Task, TaskPriority } from '../model/task'
 import styles from './LegacyTaskCard.module.css'
 
 interface LegacyTaskCardProps {
@@ -16,7 +17,7 @@ export function LegacyTaskCard({ task, onEdit, onMove, onDelete }: LegacyTaskCar
       <h3 className={styles.title}>{task.title}</h3>
       {task.description && <p className={styles.description}>{task.description}</p>}
       <span className={`${styles.priority} ${styles[task.priority]}`}>{priorityLabels[task.priority]}</span>
-      {task.dueDate && <p className={styles.dueDate}>Срок: {task.dueDate}</p>}
+      {task.dueDate && <TaskDueLabel dueDate={task.dueDate} />}
       <div className={styles.actions}>
         <button type="button" onClick={() => onEdit(task)} aria-label={`Редактировать: ${task.title}`}>Редактировать</button>
         <button type="button" onClick={() => onMove(task)} aria-label={`Переместить: ${task.title}`}>Переместить</button>

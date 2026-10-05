@@ -201,6 +201,7 @@ describe('App', () => {
     const repository = createRepositoryDouble()
     render(<App repository={repository} />)
     await screen.findByText('Подготовить релиз')
+    expect(screen.getByText('Срок: 2026-09-12')).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: 'Редактировать: Подготовить релиз' }))
     await user.clear(screen.getByLabelText('Срок'))

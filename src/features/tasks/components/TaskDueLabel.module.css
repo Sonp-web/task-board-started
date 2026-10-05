@@ -1,0 +1,10 @@
+.label {
+  justify-self: start;
+  margin: 0;
+  border-radius: 999px;
+  padding: 4px 9px;
+  color: var(--info-text);
+  background: var(--info-soft);
+  font-size: 0.75rem;
+  font-weight: 700;
+}

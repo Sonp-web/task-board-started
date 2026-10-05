@@ -1,4 +1,4 @@
-import { LegacyTaskCard } from '../../../components/LegacyTaskCard'
+import { LegacyTaskCard } from './LegacyTaskCard'
 import type { Task, TaskStatus } from '../model/task'
 import styles from './TaskColumn.module.css'
 
